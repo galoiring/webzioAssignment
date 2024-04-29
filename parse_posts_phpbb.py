@@ -11,7 +11,7 @@ response = requests.get(url)
 html_content = response.text
 
 # Pattern to match post divs
-post_pattern = r'<div class="postbody.*?">(.*?)</div>'
+post_pattern = r'<div class="postbody.*?">(.*?)<div class="back2top">'
 posts = re.findall(post_pattern, html_content, re.DOTALL)
 output = []
 
@@ -22,17 +22,16 @@ for post in posts:
     title = title_match.group(1) if title_match else ""
 
     # Pattern to match text content
-    text_pattern = r'<div class="content">\s*(.*)'
+    text_pattern = r'<div class="content">\s*(.*)\s*'
     text_match = re.search(text_pattern, post)
     text = text_match.group(1).strip() if text_match else ""
 
-    # if '<blockquote>' in text or '<div><cite>' in text or '<img class="smilies"' in text:
-    # Remove the specific HTML tags
-    # text = re.sub(r'<blockquote>', '', text)
-    # text = re.sub(r'<cite>', '', text)
-    # text = re.sub(r'<img class="smilies".*?>', '', text)
+    # Remove <img> tag from the text
+    text = re.sub(r'<img[^>]*>', '', text)
 
-    # print(text.strip())
+    # text = re.sub(r'<blockquote>.*?</blockquote>',
+    #               '', text, flags=re.DOTALL)
+    text = re.sub(r'<.*?>', '', text)
 
     # Pattern to match published date and time
     datetime_pattern = r'<time datetime="(.*?)\+.*?">(.*?)</time>'
@@ -60,4 +59,4 @@ with open("phpbb_posts.json", "w", encoding="utf-8") as file:
     import json
     json.dump(output, file, indent=4, ensure_ascii=False)
 
-print("Extracted data has been written to page1_posts.json")
+print("\t- Extracted data has been written to page1_posts.json")
