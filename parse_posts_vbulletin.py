@@ -12,7 +12,7 @@ url = input("Please enter a vBulletin URL : ".format(
 response = requests.get(url)
 html_content = response.text
 
-# Parse the HTML to fine posts
+# Parse the HTML to find posts
 post_pattern = r'<div class="b-post__userinfo-wrapper h-hide--on-preview">(.*?)<div class="b-post__footer h-hide--on-preview">'
 posts = re.findall(post_pattern, html_content, re.DOTALL)
 
@@ -29,7 +29,7 @@ for post in posts:
     text_match = re.search(text_pattern, post, re.DOTALL)
     text = re.sub(r'\s+', ' ', text_match.group(1).strip()
                   ) if text_match else ""
-    print(text)
+
     # Remove the content inside <div class="bbcode_container">
     text = re.sub(r'<div class="bbcode_container">.*?</div>',
                   '', text, flags=re.DOTALL)
@@ -74,4 +74,4 @@ for post in posts:
 with open('vbulletin_posts.json', 'w') as json_file:
     json.dump(extracted_data, json_file, indent=4)
 
-print("Extracted data has been written to extracted_data.json")
+print("\t- Extracted data has been written to extracted_data.json")
